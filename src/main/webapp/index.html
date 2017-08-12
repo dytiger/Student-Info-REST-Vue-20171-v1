@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html class="uk-height-1-1">
+<head>
+    <meta charset="UTF-8">
+    <title>[唯实讲堂] [http://www.ForTen.org]</title>
+    <link rel="stylesheet" href="css/uikit.css"/>
+    <link rel="stylesheet" href="css/components/datepicker.css"/>
+    <link rel="stylesheet" href="css/components/form-select.css"/>
+    <link rel="stylesheet" href="css/uikit.almost-flat.css"/>
+    <link rel="stylesheet" href="css/uikit.gradient.css"/>
+    <link rel="stylesheet" href="css/components/notify.css"/>
+    <style>
+        .uk-form > div {
+            margin-bottom: 10px;
+        }
+
+        .banner {
+            height: 110px;
+            background-image: url('imgs/bg01.jpg');
+            background-size: cover;
+        }
+    </style>
+</head>
+<body class="uk-height-1-1">
+<div id="main">
+    <div class="uk-container uk-container-center">
+        <div class="banner">
+        </div>
+        <nav class="uk-navbar">
+
+            <!--<ul class="uk-navbar-nav">-->
+            <!--<li class=""><a href="">添加学生</a></li>-->
+            <!--<li><a href="">...</a></li>-->
+            <!--<li class="uk-parent"><a href="">...</a></li>-->
+            <!--</ul>-->
+            <div class="uk-form uk-navbar-brand">
+                <input class="uk-form-width-small" v-model="qo.name" placeholder="姓名"/>
+                <button class="uk-button" @click="list()">查询</button>
+                <button class="uk-button" data-uk-offcanvas="{target:'#saveform'}">添加</button>
+                <button class="uk-button" data-uk-offcanvas="{target:'#updateform'}" @click="selectStudent()" :disabled="optId==0">更新</button>
+                <button class="uk-button" @click="delById()" :disabled="optId==0">删除</button>
+            </div>
+        </nav>
+        <div class="uk-block uk-block-muted">
+            <div class="uk-container">
+
+                <div class="uk-panel">
+                    <table class="uk-table uk-table-condensed">
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th>姓名</th>
+                            <th>性别</th>
+                            <th>生日</th>
+                            <th>籍贯</th>
+                            <th>身份证号</th>
+                            <th>民族</th>
+                            <th>状态</th>
+                            <th>注册时间</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="stu in studentList">
+                            <td><input v-model="optId" :value="stu.id" type="radio" /></td>
+                            <td>{{stu.name}}</td>
+                            <td>{{stu.gender}}</td>
+                            <td>{{stu.birthdayStr}}</td>
+                            <td>{{stu.hometown}}</td>
+                            <td>{{stu.idCardNum}}</td>
+                            <td>{{stu.nation}}</td>
+                            <td>{{stu.statusStr}}</td>
+                            <td>{{stu.registTimeStr}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="uk-text-right">
+                        <span>第{{page.pageNo}}页/共{{page.totalPage}}页</span>
+                        <span>第{{page.firstResultNum+1}}~{{page.lastResultNum}}条/共{{page.totalQuantity}}条数据</span>
+                        <button @click="setPageNo(1)"><i class="uk-icon-angle-double-left"></i></button>
+                        <button @click="setPageNo(qo.pageNo-1)"><i class="uk-icon-angle-left"></i></button>
+                        <input v-model="qo.pageNo" class="uk-form-width-mini uk-text-center"/>
+                        <button @click="setPageNo(qo.pageNo+1)"><i class="uk-icon-angle-right"></i></button>
+                        <button @click="setPageNo(page.totalPage)"><i class="uk-icon-angle-double-right"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="uk-block uk-block-primary uk-contrast uk-text-center">
+            ForTen.org
+        </div>
+    </div>
+    <form id="saveform" class="uk-offcanvas">
+        <div class="uk-offcanvas-bar uk-offcanvas-bar-flip">
+            <div class="uk-panel-box uk-panel-box-primary uk-height-1-1">
+                <div class="uk-panel-title">
+                    <i class="uk-icon-plus"></i>
+                    添加学生信息
+                </div>
+                <div class="uk-form">
+                    <div><input v-model="student4Save.name" class="uk-width-1-1" placeholder="姓名"/></div>
+                    <div>
+                        <label><input v-model="student4Save.gender" value="M" type="radio"/> <i
+                                class="uk-icon-male"></i></label>
+                        <label><input v-model="student4Save.gender" value="F" type="radio"/> <i
+                                class="uk-icon-female"></i></label>
+                    </div>
+                    <div><input id="birthday" value="1998-01-01" class="uk-width-1-1" placeholder="生日"
+                                data-uk-datepicker="{weekstart:0,format:'YYYY-MM-DD',i18n:{ months:['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'], weekdays:['周日','周一','周二','周三','周四','周五','周六'] },minDate:'1940-01-01',maxDate:'2010-12-31'}"/>
+                    </div>
+                    <div><input v-model="student4Save.hometown" class="uk-width-1-1" placeholder="籍贯"/></div>
+                    <div><input v-model="student4Save.idCardNum" class="uk-width-1-1" placeholder="身份证号"/></div>
+                    <div><input v-model="student4Save.nation" class="uk-width-1-1" placeholder="民族"/></div>
+                    <div>
+                        <button type="button" @click="save">保存</button>
+                        <button type="button" @click="closeForm">取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <form id="updateform" class="uk-offcanvas">
+        <div class="uk-offcanvas-bar uk-offcanvas-bar-flip uk-width-medium-1-3 uk-width-small-1-1">
+            <div class="uk-panel-box uk-panel-box-primary uk-height-1-1">
+                <div class="uk-panel-title">
+                    <i class="uk-icon-edit"></i>
+                    更新学生信息
+                </div>
+                <div class="uk-form">
+                    <div><input v-model="student4Update.name" class="uk-width-1-1" placeholder="姓名"/></div>
+                    <div>
+                        <label><input v-model="student4Update.gender" type="radio" value="M"/> 男</label>
+                        <label><input v-model="student4Update.gender" type="radio" value="F"/> 女</label>
+                    </div>
+                    <div><input v-model="student4Update.birthdayStr"  class="uk-width-1-1" placeholder="生日" type="date" />
+                    </div>
+                    <div><input v-model="student4Update.hometown" class="uk-width-1-1" placeholder="籍贯"/></div>
+                    <div><input v-model="student4Update.idCardNum" class="uk-width-1-1" placeholder="身份证号"/></div>
+                    <div><input v-model="student4Update.nation" class="uk-width-1-1" placeholder="民族"/></div>
+                    <div>
+                        <select v-model="student4Update.status">
+                            <option value="0">上课</option>
+                            <option value="1">毕业</option>
+                            <option value="2">休学</option>
+                            <option value="3">退学</option>
+                        </select>
+                    </div>
+                    <div>
+                        <input v-model="student4Update.id" type="hidden" />
+                        <button type="button" @click="update">更新</button>
+                        <button type="button" @click="closeForm">取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script src="js/jquery-3.2.1.js"></script>
+<script src="js/uikit.js"></script>
+<script src="js/components/datepicker.js"></script>
+<script src="js/components/form-select.js"></script>
+<script src="js/components/parallax.js"></script>
+<script src="js/vue.js"></script>
+<script src="js/axios.js"></script>
+<script src="js/components/notify.js"></script>
+<script>
+    var vm = new Vue({
+        el: '#main',
+        data: {
+            optId:0,
+            qo: {
+                name: '',
+                pageNo: 1,
+                pageSize: 10
+            },
+            student4Save: {
+                gender: 'M'
+            },
+            student4Update:{
+
+            },
+            studentList: [],
+            page: {
+                pageNo: 1,
+                pageSize: 10
+            }
+        },
+        created: function () {
+            this.list();
+        },
+        methods: {
+            list: function () {
+                axios({
+                    url: '/student/query',
+                    method: 'POST',
+                    data: this.qo
+                }).then((res) => {
+                    if (res.data.isEmptyResult) {
+                        UIkit.notify(res.data.message);
+                    }
+                    this.studentList = res.data.dataList;
+                    this.page = res.data.page;
+                });
+            },
+            save: function () {
+                this.student4Save.birthday = $('#birthday').val();
+                axios({
+                    url: '/student',
+                    method: 'POST',
+                    data: this.student4Save
+                }).then((res) => {
+                    UIkit.notify({
+                        pos: 'top-right',
+                        status:'success',
+                        message: "<i class='uk-icon-check'></i>" + res.data.message
+                    });
+                    this.list();
+                });
+                vm.closeForm();
+                $('#saveform')[0].reset();
+                this.student4Save = {
+                    gender: 'M'
+                };
+            },
+            selectStudent:function(){
+                axios({
+                    url:"/student/"+this.optId,
+                    method:'GET'
+                }).then((res)=>{
+                    this.student4Update = res.data;
+                });
+            },
+            delById:function(){
+                UIkit.modal.confirm("确认要删除已选数据吗？", function(){
+                    axios({
+                        url:'/student/'+vm.optId,
+                        method:'DELETE'
+                    }).then((res)=>{
+                        vm.list();
+                        vm.optId = 0;
+                        UIkit.notify({
+                            pos: 'top-right',
+                            status:'success',
+                            message: "<i class='uk-icon-check'></i>" + res.data.message
+                        });
+                    });
+                },{
+                    labels:{
+                        Cancel:'取消',
+                        Ok:'确定'
+                    },
+                    center:true
+                });
+            },
+            update: function () {
+                axios({
+                    url: '/student',
+                    method: 'PUT',
+                    data: this.student4Update
+                }).then((res) => {
+                    UIkit.notify({
+                        pos: 'top-right',
+                        status:'success',
+                        message: "<i class='uk-icon-check'></i>" + res.data.message
+                    });
+                    this.list();
+                });
+                vm.closeForm();
+                this.student4Update = {};
+                vm.closeForm();
+            },
+            closeForm: function () {
+                $.UIkit.offcanvas.hide();
+            },
+            setPageNo: function (n) {
+                if (n > this.page.totalPage) {
+                    n = this.page.totalPage;
+                }
+                if (n < 1) {
+                    n = 1;
+                }
+                this.qo.pageNo = n;
+                this.list();
+            }
+        }
+    });
+</script>
+</body>
+</html>
