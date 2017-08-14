@@ -54,7 +54,7 @@ public class StudentBo {
 
         hql = hql + "ORDER BY registTime DESC";
 
-        PageInfo page = PageInfo.getInstance(qo.getPageNo(), qo.getPageSize(), count);
+        PageInfo page = PageInfo.getInstance(qo.getPageNo(), qo.getPageSize(), (int)count);
 
         List<Student4Show> dataList = dao.findBy(hql, params, (int) page.getFirstResultNum(), page.getPageSize());
 
