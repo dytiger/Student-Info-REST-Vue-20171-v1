@@ -2,10 +2,12 @@ package org.forten.si.dao;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.jpa.QueryHints;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.Map;
 
@@ -21,35 +23,37 @@ public class HibernateDao {
         getSession().save(entity);
     }
 
-    public <T> List<T> findBy(String hql, Map<String, Object> params,int first,int max) {
+    public <T> List<T> findBy(String hql, Map<String, Object> params, int first, int max) {
         Session session = getSession();
-        Query query = session.createQuery(hql);
-        for (Map.Entry<String,Object> entry :
+        TypedQuery<T> query = session.createQuery(hql);
+        for (Map.Entry<String, Object> entry :
                 params.entrySet()) {
-            query.setParameter(entry.getKey(),entry.getValue());
+            query.setParameter(entry.getKey(), entry.getValue());
         }
         query.setFirstResult(first);
         query.setMaxResults(max);
-
+        query.setHint(QueryHints.HINT_CACHEABLE, "true");
+//        query.setHint( "org.hibernate.cacheable", "true");
         return query.getResultList();
     }
 
-    public <T> T findOneBy(String hql, Map<String, Object> params){
+    public <T> T findOneBy(String hql, Map<String, Object> params) {
         Session session = getSession();
-        Query query = session.createQuery(hql);
-        for (Map.Entry<String,Object> entry :
+        TypedQuery<T> query = session.createQuery(hql);
+        for (Map.Entry<String, Object> entry :
                 params.entrySet()) {
-            query.setParameter(entry.getKey(),entry.getValue());
+            query.setParameter(entry.getKey(), entry.getValue());
         }
-        return (T)query.getSingleResult();
+        query.setHint("org.hibernate.cacheable", "true");
+        return query.getSingleResult();
     }
 
-    public int execute(String hql, Map<String, Object> params){
+    public int execute(String hql, Map<String, Object> params) {
         Session session = getSession();
         Query query = session.createQuery(hql);
-        for (Map.Entry<String,Object> entry :
+        for (Map.Entry<String, Object> entry :
                 params.entrySet()) {
-            query.setParameter(entry.getKey(),entry.getValue());
+            query.setParameter(entry.getKey(), entry.getValue());
         }
 
         return query.executeUpdate();

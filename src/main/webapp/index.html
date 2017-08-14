@@ -37,7 +37,9 @@
                 <input class="uk-form-width-small" v-model="qo.name" placeholder="姓名"/>
                 <button class="uk-button" @click="list()">查询</button>
                 <button class="uk-button" data-uk-offcanvas="{target:'#saveform'}">添加</button>
-                <button class="uk-button" data-uk-offcanvas="{target:'#updateform'}" @click="selectStudent()" :disabled="optId==0">更新</button>
+                <button class="uk-button" data-uk-offcanvas="{target:'#updateform'}" @click="selectStudent()"
+                        :disabled="optId==0">更新
+                </button>
                 <button class="uk-button" @click="delById()" :disabled="optId==0">删除</button>
             </div>
         </nav>
@@ -61,7 +63,7 @@
                         </thead>
                         <tbody>
                         <tr v-for="stu in studentList">
-                            <td><input v-model="optId" :value="stu.id" type="radio" /></td>
+                            <td><input v-model="optId" :value="stu.id" type="radio"/></td>
                             <td>{{stu.name}}</td>
                             <td>{{stu.gender}}</td>
                             <td>{{stu.birthdayStr}}</td>
@@ -86,7 +88,16 @@
             </div>
         </div>
         <div class="uk-block uk-block-primary uk-contrast uk-text-center">
-            ForTen.org
+            <div class="uk-grid">
+                <figure class="uk-width-1-2">
+                    <img src="imgs/forten.png" alt="http://www.ForTen.org"/>
+                    <figcaption>http://www.ForTen.org</figcaption>
+                </figure>
+                <figure class="uk-width-1-2">
+                    <img src="imgs/wx.png" alt="唯实讲堂微信订阅号"/>
+                    <figcaption>微信订阅号</figcaption>
+                </figure>
+            </div>
         </div>
     </div>
     <form id="saveform" class="uk-offcanvas">
@@ -131,7 +142,7 @@
                         <label><input v-model="student4Update.gender" type="radio" value="M"/> 男</label>
                         <label><input v-model="student4Update.gender" type="radio" value="F"/> 女</label>
                     </div>
-                    <div><input v-model="student4Update.birthdayStr"  class="uk-width-1-1" placeholder="生日" type="date" />
+                    <div><input v-model="student4Update.birthdayStr" class="uk-width-1-1" placeholder="生日" type="date"/>
                     </div>
                     <div><input v-model="student4Update.hometown" class="uk-width-1-1" placeholder="籍贯"/></div>
                     <div><input v-model="student4Update.idCardNum" class="uk-width-1-1" placeholder="身份证号"/></div>
@@ -145,7 +156,7 @@
                         </select>
                     </div>
                     <div>
-                        <input v-model="student4Update.id" type="hidden" />
+                        <input v-model="student4Update.id" type="hidden"/>
                         <button type="button" @click="update">更新</button>
                         <button type="button" @click="closeForm">取消</button>
                     </div>
@@ -166,7 +177,7 @@
     var vm = new Vue({
         el: '#main',
         data: {
-            optId:0,
+            optId: 0,
             qo: {
                 name: '',
                 pageNo: 1,
@@ -175,9 +186,7 @@
             student4Save: {
                 gender: 'M'
             },
-            student4Update:{
-
-            },
+            student4Update: {},
             studentList: [],
             page: {
                 pageNo: 1,
@@ -210,7 +219,7 @@
                 }).then((res) => {
                     UIkit.notify({
                         pos: 'top-right',
-                        status:'success',
+                        status: 'success',
                         message: "<i class='uk-icon-check'></i>" + res.data.message
                     });
                     this.list();
@@ -221,34 +230,34 @@
                     gender: 'M'
                 };
             },
-            selectStudent:function(){
+            selectStudent: function () {
                 axios({
-                    url:"/student/"+this.optId,
-                    method:'GET'
-                }).then((res)=>{
+                    url: "/student/" + this.optId,
+                    method: 'GET'
+                }).then((res) => {
                     this.student4Update = res.data;
                 });
             },
-            delById:function(){
-                UIkit.modal.confirm("确认要删除已选数据吗？", function(){
+            delById: function () {
+                UIkit.modal.confirm("确认要删除已选数据吗？", function () {
                     axios({
-                        url:'/student/'+vm.optId,
-                        method:'DELETE'
-                    }).then((res)=>{
+                        url: '/student/' + vm.optId,
+                        method: 'DELETE'
+                    }).then((res) => {
                         vm.list();
                         vm.optId = 0;
                         UIkit.notify({
                             pos: 'top-right',
-                            status:'success',
+                            status: 'success',
                             message: "<i class='uk-icon-check'></i>" + res.data.message
                         });
                     });
-                },{
-                    labels:{
-                        Cancel:'取消',
-                        Ok:'确定'
+                }, {
+                    labels: {
+                        Cancel: '取消',
+                        Ok: '确定'
                     },
-                    center:true
+                    center: true
                 });
             },
             update: function () {
@@ -259,7 +268,7 @@
                 }).then((res) => {
                     UIkit.notify({
                         pos: 'top-right',
-                        status:'success',
+                        status: 'success',
                         message: "<i class='uk-icon-check'></i>" + res.data.message
                     });
                     this.list();
