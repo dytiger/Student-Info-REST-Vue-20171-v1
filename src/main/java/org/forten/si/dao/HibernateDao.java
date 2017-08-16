@@ -32,8 +32,13 @@ public class HibernateDao {
         }
         query.setFirstResult(first);
         query.setMaxResults(max);
+        // Hibernate 5.2后，我们使用的Query是javax.persistence.Query
+        // 所以我们要用以下一行或第二行的方式打开缓存
         query.setHint(QueryHints.HINT_CACHEABLE, "true");
-//        query.setHint( "org.hibernate.cacheable", "true");
+        //        query.setHint( "org.hibernate.cacheable", "true");
+        // Hibernate 5.2以前使用的Query是org.hibernate.Query
+        // 应该用以下方式打开缓存
+        // query.setCacheable(true);
         return query.getResultList();
     }
 
