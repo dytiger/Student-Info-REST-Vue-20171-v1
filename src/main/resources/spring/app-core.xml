@@ -40,20 +40,20 @@
         <property name="numHelperThreads" value="${jdbc.numHelperThreads}"/>
     </bean>
     <!-- 声明MyBatis的SqlSessionFactory Bean -->
-    <!--<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">-->
-    <!--<property name="dataSource" ref="dataSource" />-->
-    <!--</bean>-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+    <property name="dataSource" ref="dataSource" />
+    </bean>
 
     <!-- 声明映射接口所在的包 -->
-    <!--<bean id="msc" class="org.mybatis.spring.mapper.MapperScannerConfigurer">-->
-    <!--<property name="basePackage" value="org.forten.**.mapper" />-->
-    <!--</bean>-->
+    <bean id="msc" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+    <property name="basePackage" value="org.forten.**.mapper" />
+    </bean>
 
     <!-- 声明MyBatis事务管理器 -->
-    <!--<bean id="transactionManager1"
+    <bean id="transactionManager1"
           class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource" />
-    </bean>-->
+    </bean>
 
     <!-- 声明Hibernate的SessionFactory Bean -->
     <bean id="sessionFactory"

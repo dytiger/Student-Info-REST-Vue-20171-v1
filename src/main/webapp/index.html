@@ -27,12 +27,6 @@
         <div class="banner">
         </div>
         <nav class="uk-navbar">
-
-            <!--<ul class="uk-navbar-nav">-->
-            <!--<li class=""><a href="">添加学生</a></li>-->
-            <!--<li><a href="">...</a></li>-->
-            <!--<li class="uk-parent"><a href="">...</a></li>-->
-            <!--</ul>-->
             <div class="uk-form uk-navbar-brand">
                 <input class="uk-form-width-small" v-model="qo.name" placeholder="姓名"/>
                 <button class="uk-button" @click="list()">查询</button>
@@ -41,6 +35,9 @@
                         :disabled="optId==0">更新
                 </button>
                 <button class="uk-button" @click="delById()" :disabled="optId==0">删除</button>
+                <button class="uk-button" @click="showGenderCount()" data-uk-modal="{target:'#gender-count-modal'}">
+                    性别比例
+                </button>
             </div>
         </nav>
         <div class="uk-block uk-block-muted">
@@ -164,6 +161,14 @@
             </div>
         </div>
     </form>
+    <div id="gender-count-modal" class="uk-modal">
+        <div class="uk-modal-dialog uk-modal-dialog-lightbox">
+            <a href="" class="uk-modal-close uk-close uk-close-alt"></a>
+            <div id="gender-count-div" style="width: 600px;height:400px;">
+
+            </div>
+        </div>
+    </div>
 </div>
 <script src="js/jquery-3.2.1.js"></script>
 <script src="js/uikit.js"></script>
@@ -173,6 +178,7 @@
 <script src="js/vue.js"></script>
 <script src="js/axios.js"></script>
 <script src="js/components/notify.js"></script>
+<script src="js/echarts.js"></script>
 <script>
     var vm = new Vue({
         el: '#main',
@@ -191,6 +197,35 @@
             page: {
                 pageNo: 1,
                 pageSize: 10
+            },
+            genderCount: {
+                title: {
+                    text: '学生性别比例',
+                    x: 'center'
+                },
+                tooltip: {
+                    trigger: 'item',
+                    formatter: "{a} <br/>{b} : {c} ({d}%)"
+                },
+                legend: {
+                    orient: 'vertical',
+                    left: 'left',
+                    data: ['男', '女']
+                },
+                series: {
+                    name: '人数',
+                    type: 'pie',
+                    radius: '55%',
+                    center: ['50%', '60%'],
+                    data: [],
+                    itemStyle: {
+                        emphasis: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }
             }
         },
         created: function () {
@@ -288,6 +323,31 @@
                 }
                 this.qo.pageNo = n;
                 this.list();
+            },
+            showGenderCount: function () {
+                axios({
+                    url: '/count/gender',
+                    method: 'GET'
+                }).then((res) => {
+                    var myChart = echarts.init(document.getElementById('gender-count-div'));
+                    var arr = [];
+                    for (var i = 0; i < res.data.length; i++) {
+                        arr[i] = {"value": res.data[i].counts, "name": res.data[i].gender};
+                    }
+                    this.genderCount.series.data = arr;
+                    myChart.setOption(this.genderCount);
+                }).catch(function (error) {
+                    if (error.response) {
+                        //请求已经发出，但是服务器响应返回的状态吗不在2xx的范围内
+                        console.log(error.response.data);
+                        console.log(error.response.status);
+                        console.log(error.response.header);
+                    } else {
+                        //一些错误是在设置请求的时候触发
+                        console.log('Error', error.message);
+                    }
+                    console.log(error.config);
+                });
             }
         }
     });
