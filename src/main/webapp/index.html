@@ -38,6 +38,9 @@
                 <button class="uk-button" @click="showGenderCount()" data-uk-modal="{target:'#gender-count-modal'}">
                     性别比例
                 </button>
+                <button class="uk-button" @click="showAgeCount()" data-uk-modal="{target:'#age-count-modal'}">
+                    年龄分布
+                </button>
             </div>
         </nav>
         <div class="uk-block uk-block-muted">
@@ -169,6 +172,14 @@
             </div>
         </div>
     </div>
+    <div id="age-count-modal" class="uk-modal">
+        <div class="uk-modal-dialog uk-modal-dialog-lightbox">
+            <a href="" class="uk-modal-close uk-close uk-close-alt"></a>
+            <div id="age-count-div" style="width: 600px;height:400px;">
+
+            </div>
+        </div>
+    </div>
 </div>
 <script src="js/jquery-3.2.1.js"></script>
 <script src="js/uikit.js"></script>
@@ -226,6 +237,44 @@
                         }
                     }
                 }
+            },
+            ageCount: {
+                color: ['#3398DB'],
+                title: {
+                    text: '学生出生年份分布',
+                    x: 'center'
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                        type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                    }
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: [],
+                    axisTick: {
+                        alignWithLabel: true
+                    }
+                }
+                ,
+                yAxis: {
+                    type: 'value'
+                }
+                ,
+                series: {
+                    name: '出生年份',
+                    type: 'bar',
+                    barWidth: '60%',
+                    data: []
+                }
+
             }
         },
         created: function () {
@@ -336,6 +385,34 @@
                     }
                     this.genderCount.series.data = arr;
                     myChart.setOption(this.genderCount);
+                }).catch(function (error) {
+                    if (error.response) {
+                        //请求已经发出，但是服务器响应返回的状态吗不在2xx的范围内
+                        console.log(error.response.data);
+                        console.log(error.response.status);
+                        console.log(error.response.header);
+                    } else {
+                        //一些错误是在设置请求的时候触发
+                        console.log('Error', error.message);
+                    }
+                    console.log(error.config);
+                });
+            },
+            showAgeCount: function(){
+                axios({
+                    url: '/count/age',
+                    method: 'GET'
+                }).then((res) => {
+                    var myChart = echarts.init(document.getElementById('age-count-div'));
+                    var years = [];
+                    var counts = [];
+                    for (var i = 0; i < res.data.length; i++) {
+                        years[i] = res.data[i].year+'年';
+                        counts[i] = res.data[i].counts;
+                    }
+                    this.ageCount.series.data = counts;
+                    this.ageCount.xAxis.data = years;
+                    myChart.setOption(this.ageCount);
                 }).catch(function (error) {
                     if (error.response) {
                         //请求已经发出，但是服务器响应返回的状态吗不在2xx的范围内

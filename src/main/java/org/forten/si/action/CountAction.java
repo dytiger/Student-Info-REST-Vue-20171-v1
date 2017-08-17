@@ -1,6 +1,7 @@
 package org.forten.si.action;
 
 import org.forten.si.bo.CountBo;
+import org.forten.si.data.vo.AgeCount;
 import org.forten.si.data.vo.GenderCount;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -20,5 +21,10 @@ public class CountAction {
     @RequestMapping(value = "/count/gender",method = RequestMethod.GET)
     public List<GenderCount> getGenderCount(){
         return bo.getGenderCount();
+    }
+
+    @RequestMapping(value = "/count/age",method = RequestMethod.GET)
+    public List<AgeCount> getAgeCount(){
+        return bo.getAgeCount();
     }
 }
