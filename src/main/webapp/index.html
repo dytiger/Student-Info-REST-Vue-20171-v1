@@ -35,12 +35,22 @@
                         :disabled="optId==0">更新
                 </button>
                 <button class="uk-button" @click="delById()" :disabled="optId==0">删除</button>
-                <button class="uk-button" @click="showGenderCount()" data-uk-modal="{target:'#gender-count-modal'}">
+                <!--<button class="uk-button" @click="showGenderCount()" data-uk-modal="{target:'#gender-count-modal'}">
                     性别比例
                 </button>
                 <button class="uk-button" @click="showAgeCount()" data-uk-modal="{target:'#age-count-modal'}">
                     年龄分布
-                </button>
+                </button>-->
+
+                <div class="uk-button-dropdown" data-uk-dropdown="{mode:'click'}">
+                    <button class="uk-button">统计图表 <i class="uk-icon-caret-down"></i></button>
+                    <div class="uk-dropdown">
+                        <ul class="uk-nav uk-nav-dropdown">
+                            <li><a class="uk-dropdown-close" href="#gender-count-modal" data-uk-modal @click="showGenderCount()">性别比例</a></li>
+                            <li><a class="uk-dropdown-close" href="#age-count-modal" data-uk-modal @click="showAgeCount()">年龄分布</a></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </nav>
         <div class="uk-block uk-block-muted">
@@ -398,7 +408,7 @@
                     console.log(error.config);
                 });
             },
-            showAgeCount: function(){
+            showAgeCount: function () {
                 axios({
                     url: '/count/age',
                     method: 'GET'
@@ -407,7 +417,7 @@
                     var years = [];
                     var counts = [];
                     for (var i = 0; i < res.data.length; i++) {
-                        years[i] = res.data[i].year+'年';
+                        years[i] = res.data[i].year + '年';
                         counts[i] = res.data[i].counts;
                     }
                     this.ageCount.series.data = counts;
