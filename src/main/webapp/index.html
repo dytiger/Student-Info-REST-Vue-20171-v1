@@ -39,8 +39,8 @@
                     <button class="uk-button">统计图表 <i class="uk-icon-caret-down"></i></button>
                     <div class="uk-dropdown">
                         <ul class="uk-nav uk-nav-dropdown">
-                            <li><a class="uk-dropdown-close" href="#gender-count-modal" data-uk-modal @click="showGenderCount()">性别比例</a></li>
-                            <li><a class="uk-dropdown-close" href="#age-count-modal" data-uk-modal @click="showAgeCount()">年龄分布</a></li>
+                            <li><a class="uk-dropdown-close" href="#gender-count-modal" data-uk-modal="{center:true}" @click="showGenderCount()">性别比例</a></li>
+                            <li><a class="uk-dropdown-close" href="#age-count-modal" data-uk-modal="{center:true}" @click="showAgeCount()">年龄分布</a></li>
                         </ul>
                     </div>
                 </div>
@@ -194,6 +194,7 @@
 <script src="js/components/notify.js"></script>
 <script src="js/echarts.js"></script>
 <script>
+    var myChart = null;
     var vm = new Vue({
         el: '#main',
         data: {
@@ -381,7 +382,7 @@
                     url: '/count/gender',
                     method: 'GET'
                 }).then((res) => {
-                    var myChart = echarts.init(document.getElementById('gender-count-div'));
+                    myChart = echarts.init(document.getElementById('gender-count-div'));
                     var arr = [];
                     for (var i = 0; i < res.data.length; i++) {
                         arr[i] = {"value": res.data[i].counts, "name": res.data[i].gender};
@@ -406,7 +407,7 @@
                     url: '/count/age',
                     method: 'GET'
                 }).then((res) => {
-                    var myChart = echarts.init(document.getElementById('age-count-div'));
+                    myChart = echarts.init(document.getElementById('age-count-div'));
                     var years = [];
                     var counts = [];
                     for (var i = 0; i < res.data.length; i++) {
@@ -430,6 +431,12 @@
                 });
             }
         }
+    });
+
+    $(function(){
+        $('#gender-count-modal,#age-count-modal').on('hide.uk.modal',function(){
+            myChart.dispose();
+        });
     });
 </script>
 </body>
